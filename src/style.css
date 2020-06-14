@@ -1,0 +1,21 @@
+.hc-cropper-component{}
+.hc-cropper-component .canvas-warpper{
+}
+.hc-cropper-component .select-file-label{
+    display: block;
+}
+.hc-cropper-component .select-file-label::before{
+    content: '+';
+    display: block;
+    width: 150px;
+    line-height: 200px;
+    margin: auto;
+    color: #3ECEB6;
+    border:  1px dashed #3ECEB6;
+    text-align: center;
+    font-size: 48px;
+    font-weight: 200;
+}
+.hc-cropper-component .select-file-label input{
+    display: none;
+}
