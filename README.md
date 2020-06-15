@@ -1,5 +1,5 @@
 <p align="middle" ><img src="https://raw.githubusercontent.com/Mark910413/hc-react-cropper/master/example.jpg"/></p>
-<h2 align="middle">Hc React Ruler</h2>
+<h2 align="middle">Hc React Cropper</h2>
 
 ## Installation
 ### npm
