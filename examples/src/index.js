@@ -4,7 +4,7 @@ import Cropper from '../../src';
 import './style.css';
 
 const config = {
-  ratioXY: 2, // 裁剪 宽高比
+  ratioXY: 1, // 裁剪 宽高比
   size: 2, // 限制大小 2m
 }
 class App extends React.Component {

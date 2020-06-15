@@ -14,6 +14,7 @@ class Cropper {
     this.context = this.canvas.getContext('2d');
     this.box.appendChild(this.canvas);
     
+    this.pixelRatio = window.devicePixelRatio || 1;
     this.ratioXY = this.options.ratioXY || 1,
     this.scale = 1;
     this.rotate = 0;
@@ -42,6 +43,12 @@ class Cropper {
     this.setCanvasSize(this.img.width, this.img.height, this.rotate);
     // 计算蒙层及裁剪框位置，尺寸；
     this.overlay = this.initOverlay();
+    // 高清屏 放大上下文尺寸
+    this.canvas.style.width = this.canvas.width + 'px';
+    this.canvas.style.height = this.canvas.height + 'px';
+    this.canvas.setAttribute('width', this.canvas.width * this.pixelRatio);
+    this.canvas.setAttribute('height', this.canvas.height * this.pixelRatio);
+
     // 绘制图形
     this.draw();
   }
@@ -49,20 +56,23 @@ class Cropper {
   // rotate 旋转情况
   // 需要旋转时高度 要由放大到 原来的 （宽 度 / 高度）倍数，宽度放大同样的倍数
   draw() {
-		// clear the canvas
+    // clear the canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.save();
+    this.context.scale(this.pixelRatio, this.pixelRatio);
     // 绘制图片
     this.drawImage(this.img, this.rotate);
     this.drawOverlay(this.overlay);
     this.drawResizer(this.overlay);
+    this.context.restore();
   }
   // 绘制图片
   drawImage(image, rotate) {
     const canvas = this.canvas;
     const context = canvas.getContext('2d');
 
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const width = this.canvas.offsetWidth;
+    const height = this.canvas.offsetHeight;
     
     if (!rotate || rotate > 8) {
       context.drawImage(image, 0, 0, width, height);
@@ -112,8 +122,8 @@ class Cropper {
     this.context.closePath();
 
     this.context.beginPath();
-    this.context.strokeStyle = '#000';
-    this.context.lineWidth = '1';
+    this.context.strokeStyle = '#fff';
+    this.context.lineWidth = 1;
     this.context.strokeRect(overlay.x, overlay.y, overlay.width, overlay.height);
     this.context.restore();
 
@@ -121,32 +131,40 @@ class Cropper {
   // 绘制拖拽点
   drawResizer(overlay) {
     const context = this.canvas.getContext('2d');
-    
     const resizerRectArr = [
       {
-        x: overlay.x - overlay.resizerSide / 2,
-        y: overlay.y- overlay.resizerSide / 2,
+        x: overlay.x,
+        y: overlay.y,
       }
       , 
       {
-        x: overlay.x + overlay.width - overlay.resizerSide / 2,
-        y: overlay.y - overlay.resizerSide / 2,
+        x: overlay.x + overlay.width,
+        y: overlay.y,
       },
       {
-        x: overlay.x - overlay.resizerSide / 2,
-        y: overlay.y + overlay.height - overlay.resizerSide / 2,
+        x: overlay.x,
+        y: overlay.y + overlay.height,
       },
       {
-        x: overlay.x + overlay.width - overlay.resizerSide / 2,
-        y: overlay.y + overlay.height - overlay.resizerSide / 2,
+        x: overlay.x + overlay.width,
+        y: overlay.y + overlay.height,
       }
     ]
-    resizerRectArr.forEach((point) => {
+    const arr = [{x: 1, y: 1}, {x: -1, y : 1}, {x: 1, y: -1}, {x: -1, y: -1}];
+    resizerRectArr.forEach((point, index) => {
       context.save();
-      context.fillStyle = "#fff";
+      context.beginPath();
+      context.lineWidth = '2';
       context.strokeStyle = "#fff";
-      context.fillRect(point.x, point.y, overlay.resizerSide, overlay.resizerSide);
-      context.strokeRect(point.x, point.y, overlay.resizerSide, overlay.resizerSide);
+      context.lineJoin="round";
+      context.moveTo(point.x + (arr[index].x * overlay.resizerSide), point.y);
+      context.lineTo(point.x, point.y);
+      context.lineTo(point.x, point.y + (arr[index].y * overlay.resizerSide));
+      context.stroke();
+      // context.fillRect(point.x, point.y, overlay.resizerSide, overlay.resizerSide);
+      // context.strokeRect(point.x, point.y, overlay.resizerSide, overlay.resizerSide);
+
+      context.closePath();
       context.restore();
     });
   }
@@ -261,8 +279,8 @@ class Cropper {
 			overlay.y = y - drag.originalOverlayY;
 
 			// Limit to size of canvas.
-			var xMax = canvas.width - overlay.width;
-			var yMax = canvas.height - overlay.height;
+			var xMax = canvas.offsetWidth - overlay.width;
+			var yMax = canvas.offsetHeight - overlay.height;
 
 			if(overlay.x < 0) {
 				overlay.x = 0;
