@@ -58,7 +58,7 @@ class CropperComponent extends React.Component {
         {
           !cropping ?
             <label className="select-file-label">
-              <input type="file" id="fileInput" onChange={this.handleFileSelect} />
+              <input type="file" id="fileInput" onChange={this.handleFileSelect} accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"/>
             </label> 
           :
              null

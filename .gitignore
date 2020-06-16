@@ -4,6 +4,7 @@
 .idea
 *.iml
 **/META-INF
+dist
 gitlab-token.js
 yarn-error.log
 yarn.lock
